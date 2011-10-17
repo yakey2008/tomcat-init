@@ -1,0 +1,71 @@
+#!/bin/sh
+#
+# Startup script for the Apache Tomcat server.
+# Based on http://tldp.org/HOWTO/MMBase-Inst-HOWTO/x321.html.
+#
+# Written by Adam Sharp
+#
+# Tested on an Amazon Linux AMI EC2 instance (should work on CentOS and
+# other RPM based systems).
+#
+# chkconfig: 2345 80 20
+# description: Apache Tomcat server
+# processname: tomcat
+# pidfile: /var/run/tomcat.pid
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+# Source networking configuration.
+. /etc/sysconfig/network
+
+# Check that networking is up.
+[ ${NETWORKING} = "no" ] && exit 0
+
+SERVICENAME=tomcat
+LOCKFILE=/var/lock/subsys/$SERVICENAME
+export CATALINA_PID=/var/run/$SERVICENAME.pid
+
+# Set up Tomcat environment
+#  Change these variables as necessary to match the Tomcat environment
+#  on your system.
+#  This is not an exhaustive list: you can find the list of environment
+#  variables accepted at the top of catalina.sh.
+export JAVA_HOME=/usr
+#export JRE_HOME=
+export CATALINA_HOME=/usr/local/apache-tomcat-6.0.33
+#export JAVA_OPTS=
+#export CATALINA_OPTS=
+
+[ -f $CATALINA_HOME/bin/catalina.sh ] || exit 0
+
+
+# See how we were called.
+case "$1" in
+  start)
+        # Start daemon.
+        echo "Starting Tomcat:"
+        $CATALINA_HOME/bin/catalina.sh start
+        RETVAL=$?
+        [ $RETVAL = 0 ] && touch $LOCKFILE
+        ;;
+  stop)
+        # Stop daemons.
+        echo "Shutting down Tomcat:"
+        $CATALINA_HOME/bin/catalina.sh stop
+        RETVAL=$?
+        [ $RETVAL = 0 ] && rm -f $LOCKFILE
+        ;;
+  restart)
+        $0 stop
+        $0 start
+        ;;
+  status)
+        status $SERVICENAME
+        ;;
+  *)
+        echo "Usage: $0 {start|stop|restart|status}"
+        exit 1
+esac
+
+exit 0
