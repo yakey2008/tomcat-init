@@ -7,6 +7,7 @@
 #
 # Tested on an Amazon Linux AMI EC2 instance (should work on CentOS and
 # other RPM based systems).
+# Works with Tomcat 5 and 6.
 #
 # chkconfig: 2345 80 20
 # description: Apache Tomcat server
